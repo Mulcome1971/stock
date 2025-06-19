@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bon d'entrée - Système de Gestion de Stock</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .logo {
+            width: 4cm;
+            height: 4cm;
+            display: block;
+            margin: 15px auto 25px auto;
+            border: 3px solid #4CAF50;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .logo:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(76, 175, 80, 0.3);
+            border-color: #45a049;
+        }
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        .logo:hover::before {
+            left: 100%;
+        }
+        .logo img {
+            width: 85%;
+            height: 85%;
+            object-fit: contain;
+            border-radius: 10px;
+            z-index: 1;
+            position: relative;
+        }
+        
+        /* تنسيق عنوان BON D'ENTRÉE */
+        .bon-title {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 3px;
+        }
+        
+        .bon-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .bon-table td {
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+        }
+        .bon-table td:first-child {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            font-weight: bold;
+            color: #495057;
+            border-right: 2px solid #4CAF50;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .items-table th {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px 10px;
+            border: 1px solid #45a049;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .items-table td {
+            padding: 12px 10px;
+            border: 1px solid #e0e0e0;
+            background: #fafafa;
+            vertical-align: middle;
+        }
+        .items-table tr:hover td {
+            background: #f0f8f0;
+            transition: background 0.3s ease;
+        }
+        .items-table input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 8px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .items-table input:focus {
+            background: white;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
+            outline: none;
+        }
+        .items-table select {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 8px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .items-table select:focus {
+            background: white;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
+            outline: none;
+        }
+        
+        .total-table {
+            width: 300px;
+            margin-left: auto;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .total-table td {
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+        }
+        .total-table td:first-child {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            font-weight: bold;
+            color: #495057;
+            border-right: 2px solid #4CAF50;
+        }
+        
+        .signature-table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .signature-table td {
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            text-align: center;
+            background: #fafafa;
+        }
+        .signature-table strong {
+            color: #4CAF50;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .signature-box {
+            height: 120px;
+            border: 2px dashed #4CAF50;
+            border-radius: 10px;
+            margin: 15px 0;
+            background: linear-gradient(145deg, #f8f9fa, #ffffff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-style: italic;
+            transition: all 0.3s ease;
+        }
+        .signature-box:hover {
+            border-color: #45a049;
+            background: linear-gradient(145deg, #f0f8f0, #ffffff);
+        }
+        
+        /* تحسينات إضافية للجداول */
+        .form-container {
+            background: linear-gradient(145deg, #f8f9fa, #ffffff);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        
+        /* تنسيق الأزرار */
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+            background: linear-gradient(135deg, #45a049, #4CAF50);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        /* تحسين حقول الإدخال */
+        .form-control {
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+        
+        /* تنسيق موحد لجميع حقول الجدول */
+        .items-table .form-control,
+        .items-table input,
+        .items-table select {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 8px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: #495057;
+        }
+        
+        .items-table .form-control:focus,
+        .items-table input:focus,
+        .items-table select:focus {
+            background: white;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
+            outline: none;
+            border: 1px solid #4CAF50;
+        }
+        
+        .items-table .form-control:hover,
+        .items-table input:hover,
+        .items-table select:hover {
+            background: rgba(76, 175, 80, 0.05);
+        }
+        
+        /* تنسيق خاص للحقول المقروءة فقط */
+        .items-table input[readonly] {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        /* تنسيق الأزرار في الجدول */
+        .items-table .btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .items-table .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            border: none;
+            color: white;
+        }
+        
+        .items-table .btn-danger:hover {
+            background: linear-gradient(135deg, #c82333, #dc3545);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .print-only {
+            display: none;
+        }
+        @media print {
+            .no-print {
+                display: none;
+            }
+            .print-only {
+                display: block;
+            }
+            .container-fluid {
+                padding: 0;
+            }
+            .bon-title {
+                background: #4CAF50 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            .items-table th {
+                background: #4CAF50 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+        }
+        
+        /* تنسيق موحد لجميع الصفوف */
+        .items-table tr {
+            transition: all 0.3s ease;
+        }
+        
+        .items-table tr:nth-child(even) td {
+            background: #f8f9fa;
+        }
+        
+        .items-table tr:nth-child(even):hover td {
+            background: #e8f5e8;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar no-print">
+                <h3 class="mb-4">Gestion Stock</h3>
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="dashboard.html">
+                        <i class="fas fa-home me-2"></i> Accueil
+                    </a>
+                    <a class="nav-link" href="inventory.html">
+                        <i class="fas fa-boxes me-2"></i> Inventaire
+                    </a>
+                    <a class="nav-link active" href="stock-in.html">
+                        <i class="fas fa-arrow-right-to-bracket me-2"></i> Bon d'entrée
+                    </a>
+                    <a class="nav-link" href="stock-out.html">
+                        <i class="fas fa-arrow-right-from-bracket me-2"></i> Bon de sortie
+                    </a>
+                    <a class="nav-link" href="reports.html">
+                        <i class="fas fa-chart-bar me-2"></i> Rapports
+                    </a>
+                    <a class="nav-link" href="users.html">
+                        <i class="fas fa-users me-2"></i> Utilisateurs
+                    </a>
+                    <a class="nav-link" href="#" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt me-2"></i> Déconnexion
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="container-fluid">
+                    <!-- Logo -->
+                    <div class="logo">
+                        <img src="protection-civile-marocaine-seeklogo.png" alt="Protection Civile Marocaine Logo">
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+                        <h2>Bon d'entrée</h2>
+                        <div>
+                            <button class="btn btn-secondary me-2" onclick="window.location.href='dashboard.html'">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </button>
+                            <button class="btn btn-secondary me-2" onclick="window.history.back()">
+                                <i class="fas fa-arrow-left me-2"></i>Retour
+                            </button>
+                            <button class="btn btn-primary" onclick="printBonEntree()">
+                                <i class="fas fa-print me-2"></i>Imprimer
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bon d'entrée Form -->
+                    <div class="form-container mb-4" id="bonEntreeForm">
+                        <div class="text-center mb-4">
+                            <h1 class="bon-title">BON D'ENTRÉE</h1>
+                        </div>
+
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Article</th>
+                                    <th>Description</th>
+                                    <th>Quantité</th>
+                                    <th>Le donnant</th>
+                                    <th>Le Magasinier</th>
+                                    <th class="no-print">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsTable">
+                                <tr>
+                                    <td><input type="text" readonly></td>
+                                    <td>
+                                        <input type="text" class="form-control" placeholder="Entrez le nom de l'article" required>
+                                    </td>
+                                    <td><input type="text"></td>
+                                    <td><input type="number" class="quantity" required></td>
+                                    <td><input type="text" class="price" required></td>
+                                    <td><input type="text" class="total"></td>
+                                    <td class="no-print">
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="text-end mb-3 no-print">
+                            <button type="button" class="btn btn-success btn-sm" onclick="addItem()">
+                                <i class="fas fa-plus me-2"></i>Ajouter une ligne
+                            </button>
+                        </div>
+
+                        <table class="bon-table">
+                            <tr>
+                                <td>Observations</td>
+                                <td><textarea class="form-control" rows="3"></textarea></td>
+                            </tr>
+                        </table>
+
+                        <table class="signature-table">
+                            <tr>
+                                <td>
+                                    <strong>Signature Fournisseur</strong>
+                                    <div class="signature-box"></div>
+                                    <div class="mt-2">
+                                        <p class="mb-1">Nom et qualité:</p>
+                                        <input type="text" class="form-control" id="fournisseurNomQualite">
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>Signature Magasinier</strong>
+                                    <div class="signature-box"></div>
+                                    <div class="mt-2">
+                                        <p class="mb-1">Nom et qualité:</p>
+                                        <input type="text" class="form-control" id="magasinierNomQualite">
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="row mt-4 no-print">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Enregistrer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/stock-in.js"></script>
+</body>
+</html> 

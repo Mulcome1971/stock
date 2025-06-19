@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقارير - نظام إدارة المخزن</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .logo {
+            width: 4cm;
+            height: 4cm;
+            display: block;
+            margin: 15px auto 25px auto;
+            border: 3px solid #4CAF50;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .logo:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(76, 175, 80, 0.3);
+            border-color: #45a049;
+        }
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        .logo:hover::before {
+            left: 100%;
+        }
+        .logo img {
+            width: 85%;
+            height: 85%;
+            object-fit: contain;
+            border-radius: 10px;
+            z-index: 1;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <h3 class="mb-4">نظام المخزن</h3>
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="dashboard.html">
+                        <i class="fas fa-home me-2"></i> الرئيسية
+                    </a>
+                    <a class="nav-link" href="inventory.html">
+                        <i class="fas fa-boxes me-2"></i> المخزون
+                    </a>
+                    <a class="nav-link" href="stock-in.html">
+                        <i class="fas fa-arrow-right-to-bracket me-2"></i> دخول البضائع
+                    </a>
+                    <a class="nav-link" href="stock-out.html">
+                        <i class="fas fa-arrow-right-from-bracket me-2"></i> خروج البضائع
+                    </a>
+                    <a class="nav-link active" href="reports.html">
+                        <i class="fas fa-chart-bar me-2"></i> التقارير
+                    </a>
+                    <a class="nav-link" href="users.html">
+                        <i class="fas fa-users me-2"></i> المستخدمين
+                    </a>
+                    <a class="nav-link" href="#" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt me-2"></i> تسجيل الخروج
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="container-fluid">
+                    <!-- Logo -->
+                    <div class="logo">
+                        <img src="protection-civile-marocaine-seeklogo.png" alt="Protection Civile Marocaine Logo">
+                    </div>
+                    
+                    <h2 class="mb-4">التقارير</h2>
+
+                    <!-- Report Filters -->
+                    <div class="form-container mb-4">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">نوع التقرير</label>
+                                <select class="form-select" id="reportType">
+                                    <option value="inventory">تقرير المخزون</option>
+                                    <option value="sales">تقرير المبيعات</option>
+                                    <option value="purchases">تقرير المشتريات</option>
+                                    <option value="low-stock">تقرير المخزون المنخفض</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">من تاريخ</label>
+                                <input type="date" class="form-control" id="startDate">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">إلى تاريخ</label>
+                                <input type="date" class="form-control" id="endDate">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">&nbsp;</label>
+                                <div>
+                                    <button class="btn btn-primary w-100 mb-2" onclick="generateReport()">
+                                        <i class="fas fa-search me-2"></i>عرض التقرير
+                                    </button>
+                                    <button class="btn btn-secondary w-100" onclick="window.location.href='dashboard.html'">
+                                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="dashboard-card">
+                                <h4>المبيعات الشهرية</h4>
+                                <canvas id="salesChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="dashboard-card">
+                                <h4>توزيع المنتجات</h4>
+                                <canvas id="productsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Report Table -->
+                    <div class="table-container">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4>تفاصيل التقرير</h4>
+                            <button class="btn btn-success" onclick="exportReport()">
+                                <i class="fas fa-file-excel me-2"></i>تصدير إلى Excel
+                            </button>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>المنتج</th>
+                                    <th>الكمية</th>
+                                    <th>السعر</th>
+                                    <th>الإجمالي</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2024-03-20</td>
+                                    <td>منتج 1</td>
+                                    <td>100</td>
+                                    <td>500 ريال</td>
+                                    <td>50,000 ريال</td>
+                                    <td><span class="badge bg-success">مكتمل</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2024-03-19</td>
+                                    <td>منتج 2</td>
+                                    <td>50</td>
+                                    <td>200 ريال</td>
+                                    <td>10,000 ريال</td>
+                                    <td><span class="badge bg-success">مكتمل</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <div class="dashboard-card">
+                                <h5>إجمالي المبيعات</h5>
+                                <h3>60,000 ريال</h3>
+                                <p class="text-success"><i class="fas fa-arrow-up"></i> 15% هذا الشهر</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="dashboard-card">
+                                <h5>إجمالي المشتريات</h5>
+                                <h3>45,000 ريال</h3>
+                                <p class="text-success"><i class="fas fa-arrow-up"></i> 10% هذا الشهر</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="dashboard-card">
+                                <h5>صافي الربح</h5>
+                                <h3>15,000 ريال</h3>
+                                <p class="text-success"><i class="fas fa-arrow-up"></i> 20% هذا الشهر</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="dashboard-card">
+                                <h5>عدد المعاملات</h5>
+                                <h3>150</h3>
+                                <p class="text-success"><i class="fas fa-arrow-up"></i> 5% هذا الشهر</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/reports.js"></script>
+</body>
+</html> 
