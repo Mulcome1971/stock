@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bon de Sortie - Système de Gestion de Stock</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .logo {
+            width: 4cm;
+            height: 4cm;
+            display: block;
+            margin: 15px auto 25px auto;
+            border: 3px solid #4CAF50;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .logo:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(76, 175, 80, 0.3);
+            border-color: #45a049;
+        }
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        .logo:hover::before {
+            left: 100%;
+        }
+        .logo img {
+            width: 85%;
+            height: 85%;
+            object-fit: contain;
+            border-radius: 10px;
+            z-index: 1;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <h3 class="mb-4">Gestion Stock</h3>
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="dashboard.html">
+                        <i class="fas fa-home me-2"></i> Accueil
+                    </a>
+                    <a class="nav-link" href="inventory.html">
+                        <i class="fas fa-boxes me-2"></i> Inventaire
+                    </a>
+                    <a class="nav-link" href="stock-in.html">
+                        <i class="fas fa-arrow-right-to-bracket me-2"></i> Bon d'entrée
+                    </a>
+                    <a class="nav-link active" href="stock-out.html">
+                        <i class="fas fa-arrow-right-from-bracket me-2"></i> Bon de sortie
+                    </a>
+                    <a class="nav-link" href="reports.html">
+                        <i class="fas fa-chart-bar me-2"></i> Rapports
+                    </a>
+                    <a class="nav-link" href="users.html">
+                        <i class="fas fa-users me-2"></i> Utilisateurs
+                    </a>
+                    <a class="nav-link" href="#" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt me-2"></i> Déconnexion
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="container-fluid">
+                    <!-- Logo -->
+                    <div class="logo">
+                        <img src="protection-civile-marocaine-seeklogo.png" alt="Protection Civile Marocaine Logo">
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Bon de Sortie</h2>
+                        <div>
+                            <button class="btn btn-secondary me-2" onclick="window.location.href='dashboard.html'">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </button>
+                            <button class="btn btn-primary" onclick="printBonSortie()">
+                                <i class="fas fa-print me-2"></i>Imprimer
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bon de Sortie Form -->
+                    <div class="form-container mb-4" id="bonSortieForm">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h4>BON DE SORTIE N° <span id="bonNumber">BS-001</span></h4>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <p>Date: <span id="currentDate"></span></p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Client</label>
+                                <select class="form-select" required>
+                                    <option value="">Sélectionner un client</option>
+                                    <option value="1">Client 1</option>
+                                    <option value="2">Client 2</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">N° Commande Client</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Date de livraison</label>
+                                <input type="date" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Mode de transport</label>
+                                <select class="form-select" required>
+                                    <option value="">Sélectionner</option>
+                                    <option value="camion">Camion</option>
+                                    <option value="avion">Avion</option>
+                                    <option value="bateau">Bateau</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Article</th>
+                                        <th>Description</th>
+                                        <th>Quantité</th>
+                                        <th>Prix unitaire</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itemsTable">
+                                    <tr>
+                                        <td>
+                                            <select class="form-select" required>
+                                                <option value="">Sélectionner</option>
+                                                <option value="1">Article 1</option>
+                                                <option value="2">Article 2</option>
+                                            </select>
+                                        </td>
+                                        <td><input type="text" class="form-control"></td>
+                                        <td><input type="number" class="form-control quantity" required></td>
+                                        <td><input type="number" class="form-control price" required></td>
+                                        <td><input type="number" class="form-control total" readonly></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4" class="text-end"><strong>Total HT</strong></td>
+                                        <td><input type="number" class="form-control" id="totalHT" readonly></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" class="text-end"><strong>TVA (20%)</strong></td>
+                                        <td><input type="number" class="form-control" id="tva" readonly></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" class="text-end"><strong>Total TTC</strong></td>
+                                        <td><input type="number" class="form-control" id="totalTTC" readonly></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Observations</label>
+                                <textarea class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="border p-3">
+                                    <h5>Signature Client</h5>
+                                    <div class="signature-box" style="height: 100px;"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="border p-3">
+                                    <h5>Signature Magasinier</h5>
+                                    <div class="signature-box" style="height: 100px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-success me-2" onclick="addItem()">
+                                    <i class="fas fa-plus me-2"></i>Ajouter une ligne
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Enregistrer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/stock-out.js"></script>
+</body>
+</html> 

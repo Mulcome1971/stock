@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventaire - Système de Gestion de Stock</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .btn-danger {
+            background-color: #f44336;
+        }
+        .btn-danger:hover {
+            background-color: #da190b;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            color: #000;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .logo {
+            width: 4cm;
+            height: 4cm;
+            display: block;
+            margin: 15px auto 25px auto;
+            border: 3px solid #4CAF50;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .logo:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(76, 175, 80, 0.3);
+            border-color: #45a049;
+        }
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        .logo:hover::before {
+            left: 100%;
+        }
+        .logo img {
+            width: 85%;
+            height: 85%;
+            object-fit: contain;
+            border-radius: 10px;
+            z-index: 1;
+            position: relative;
+        }
+        .print-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .print-btn:hover {
+            background-color: #0056b3;
+        }
+        
+        /* Styles pour la signature */
+        .signature-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .signature-section h3 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+        .signature-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .signature-canvas-container {
+            flex: 1;
+            min-width: 300px;
+        }
+        .signature-canvas {
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            background-color: white;
+            cursor: crosshair;
+        }
+        .signature-controls {
+            flex: 1;
+            min-width: 200px;
+        }
+        .signature-info {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e8f5e8;
+            border-radius: 4px;
+            border-left: 4px solid #4CAF50;
+        }
+        .signature-status {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .signature-status.unsigned {
+            color: #f44336;
+        }
+        
+        @media print {
+            .controls, .print-btn {
+                display: none;
+            }
+            .signature-section {
+                display: block !important;
+                border: 1px solid #000;
+                margin: 20px 0;
+                padding: 15px;
+                page-break-inside: avoid;
+            }
+            .signature-section h3 {
+                color: #000 !important;
+                font-size: 16px;
+                margin-bottom: 10px;
+            }
+            .signature-container {
+                display: block;
+            }
+            .signature-canvas-container {
+                margin-bottom: 15px;
+            }
+            .signature-canvas {
+                border: 1px solid #000;
+                max-width: 300px;
+                height: auto;
+            }
+            .signature-controls {
+                display: none;
+            }
+            .signature-info {
+                background-color: transparent;
+                border: none;
+                padding: 5px 0;
+            }
+            .logo {
+                width: 3cm;
+                height: 3cm;
+                margin: 20px auto;
+                box-shadow: none;
+            }
+            body {
+                margin: 0;
+                padding: 20px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                border: 1px solid #000;
+                padding: 8px;
+                text-align: left;
+            }
+            th {
+                background-color: #f2f2f2 !important;
+                color: #000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="protection-civile-marocaine-seeklogo.png" alt="Protection Civile Marocaine Logo">
+        </div>
+        <h1>Gestion d'Inventaire</h1>
+        
+        <div class="controls">
+            <button class="btn" onclick="addRow()">Ajouter une ligne</button>
+            <button class="btn btn-danger" onclick="deleteLastRow()">Supprimer la dernière ligne</button>
+            <button class="print-btn" onclick="printInventory()">
+                <i class="fas fa-print"></i> Imprimer (Nouvelle fenêtre)
+            </button>
+            <button class="print-btn" onclick="printCurrentPage()" style="background-color: #17a2b8;">
+                <i class="fas fa-print"></i> Imprimer (Page actuelle)
+            </button>
+            <button class="btn btn-warning" onclick="clearAllData()" style="background-color: #ffc107; color: #000;">
+                <i class="fas fa-trash"></i> Effacer tout
+            </button>
+            <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </button>
+        </div>
+
+        <table id="inventoryTable">
+            <thead>
+                <tr>
+                    <th>Date d'entrée</th>
+                    <th>Date de sortie</th>
+                    <th>Produit</th>
+                    <th>Unité</th>
+                    <th>Quantité</th>
+                    <th>Observation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="date" name="date"></td>
+                    <td><input type="date" name="date_sortie"></td>
+                    <td><input type="text" name="produit" placeholder="Nom du produit"></td>
+                    <td>
+                        <select name="unite">
+                            <option value="">Sélectionner</option>
+                            <option value="pieces">Pièces</option>
+                            <option value="kg">Kilogrammes</option>
+                            <option value="litres">Litres</option>
+                            <option value="metres">Mètres</option>
+                            <option value="boites">Boîtes</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="quantite" placeholder="0"></td>
+                    <td><textarea name="observation" rows="2" placeholder="Observations..."></textarea></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Section Signature -->
+        <div class="signature-section">
+            <h3><i class="fas fa-signature"></i> Signature de Validation</h3>
+            <div class="signature-container">
+                <div class="signature-canvas-container">
+                    <canvas id="signatureCanvas" class="signature-canvas" width="400" height="200"></canvas>
+                    <div class="signature-info">
+                        <p><strong>Instructions:</strong> Signez dans la zone ci-dessus pour valider les données d'inventaire.</p>
+                        <p class="signature-status" id="signatureStatus">Signature requise</p>
+                    </div>
+                </div>
+                <div class="signature-controls">
+                    <button class="btn" onclick="clearSignature()">
+                        <i class="fas fa-eraser"></i> Effacer la signature
+                    </button>
+                    <button class="btn" onclick="saveWithSignature()" style="background-color: #28a745;">
+                        <i class="fas fa-save"></i> Sauvegarder avec signature
+                    </button>
+                    <div style="margin-top: 15px;">
+                        <label for="signerName"><strong>Nom du signataire:</strong></label>
+                        <input type="text" id="signerName" placeholder="Votre nom complet" style="margin-top: 5px;">
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <label for="signatureDate"><strong>Date de signature:</strong></label>
+                        <input type="datetime-local" id="signatureDate" style="margin-top: 5px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables pour la signature
+        let isDrawing = false;
+        let hasSignature = false;
+        const canvas = document.getElementById('signatureCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Configuration du canvas
+        ctx.strokeStyle = '#4CAF50';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        
+        // Événements pour la signature
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        
+        // Support tactile pour les appareils mobiles
+        canvas.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            startDrawing({ clientX: x, clientY: y });
+        });
+        
+        canvas.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            draw({ clientX: x, clientY: y });
+        });
+        
+        canvas.addEventListener('touchend', stopDrawing);
+        
+        function startDrawing(e) {
+            isDrawing = true;
+            draw(e);
+        }
+        
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            
+            hasSignature = true;
+            updateSignatureStatus();
+        }
+        
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.beginPath();
+        }
+        
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hasSignature = false;
+            updateSignatureStatus();
+        }
+        
+        function updateSignatureStatus() {
+            const status = document.getElementById('signatureStatus');
+            if (hasSignature) {
+                status.textContent = 'Signature présente';
+                status.className = 'signature-status';
+            } else {
+                status.textContent = 'Signature requise';
+                status.className = 'signature-status unsigned';
+            }
+        }
+        
+        function saveWithSignature() {
+            const signerName = document.getElementById('signerName').value.trim();
+            const signatureDate = document.getElementById('signatureDate').value;
+            
+            if (!hasSignature) {
+                alert('Veuillez signer avant de sauvegarder.');
+                return;
+            }
+            
+            if (!signerName) {
+                alert('Veuillez entrer votre nom.');
+                return;
+            }
+            
+            if (!signatureDate) {
+                alert('Veuillez entrer la date de signature.');
+                return;
+            }
+            
+            // Sauvegarder les données avec la signature
+            saveData();
+            
+            // Sauvegarder les informations de signature
+            const signatureData = {
+                hasSignature: true,
+                signerName: signerName,
+                signatureDate: signatureDate,
+                signatureImage: canvas.toDataURL()
+            };
+            localStorage.setItem('inventorySignature', JSON.stringify(signatureData));
+            
+            alert('Données sauvegardées avec signature avec succès!');
+        }
+
+        // Fonction pour sauvegarder les données
+        function saveData() {
+            const table = document.querySelector('#inventoryTable');
+            const rows = table.querySelectorAll('tbody tr');
+            const data = [];
+            
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll('input, select, textarea');
+                const rowData = {
+                    dateEntree: inputs[0]?.value || '',
+                    dateSortie: inputs[1]?.value || '',
+                    produit: inputs[2]?.value || '',
+                    unite: inputs[3]?.value || '',
+                    quantite: inputs[4]?.value || '',
+                    observation: inputs[5]?.value || ''
+                };
+                data.push(rowData);
+            });
+            
+            localStorage.setItem('inventoryData', JSON.stringify(data));
+        }
+
+        // Fonction pour charger les données
+        function loadData() {
+            const savedData = localStorage.getItem('inventoryData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                const tbody = document.querySelector('#inventoryTable tbody');
+                tbody.innerHTML = ''; // Vider le tableau
+                
+                data.forEach(rowData => {
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td><input type="date" name="date" value="${rowData.dateEntree}" onchange="saveData()"></td>
+                        <td><input type="date" name="date_sortie" value="${rowData.dateSortie}" onchange="saveData()"></td>
+                        <td><input type="text" name="produit" placeholder="Nom du produit" value="${rowData.produit}" onchange="saveData()"></td>
+                        <td>
+                            <select name="unite" onchange="saveData()">
+                                <option value="">Sélectionner</option>
+                                <option value="pieces" ${rowData.unite === 'pieces' ? 'selected' : ''}>Pièces</option>
+                                <option value="kg" ${rowData.unite === 'kg' ? 'selected' : ''}>Kilogrammes</option>
+                                <option value="litres" ${rowData.unite === 'litres' ? 'selected' : ''}>Litres</option>
+                                <option value="metres" ${rowData.unite === 'metres' ? 'selected' : ''}>Mètres</option>
+                                <option value="boites" ${rowData.unite === 'boites' ? 'selected' : ''}>Boîtes</option>
+                            </select>
+                        </td>
+                        <td><input type="number" name="quantite" placeholder="0" value="${rowData.quantite}" onchange="saveData()"></td>
+                        <td><textarea name="observation" rows="2" placeholder="Observations..." onchange="saveData()">${rowData.observation}</textarea></td>
+                    `;
+                    tbody.appendChild(newRow);
+                });
+            }
+            
+            // Charger les données de signature
+            loadSignatureData();
+        }
+        
+        function loadSignatureData() {
+            const savedSignature = localStorage.getItem('inventorySignature');
+            if (savedSignature) {
+                const signatureData = JSON.parse(savedSignature);
+                if (signatureData.hasSignature) {
+                    const img = new Image();
+                    img.onload = function() {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0);
+                        hasSignature = true;
+                        updateSignatureStatus();
+                    };
+                    img.src = signatureData.signatureImage;
+                }
+                
+                if (signatureData.signerName) {
+                    document.getElementById('signerName').value = signatureData.signerName;
+                }
+                if (signatureData.signatureDate) {
+                    document.getElementById('signatureDate').value = signatureData.signatureDate;
+                }
+            }
+        }
+
+        function addRow() {
+            const tbody = document.querySelector('#inventoryTable tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td><input type="date" name="date" onchange="saveData()"></td>
+                <td><input type="date" name="date_sortie" onchange="saveData()"></td>
+                <td><input type="text" name="produit" placeholder="Nom du produit" onchange="saveData()"></td>
+                <td>
+                    <select name="unite" onchange="saveData()">
+                        <option value="">Sélectionner</option>
+                        <option value="pieces">Pièces</option>
+                        <option value="kg">Kilogrammes</option>
+                        <option value="litres">Litres</option>
+                        <option value="metres">Mètres</option>
+                        <option value="boites">Boîtes</option>
+                    </select>
+                </td>
+                <td><input type="number" name="quantite" placeholder="0" onchange="saveData()"></td>
+                <td><textarea name="observation" rows="2" placeholder="Observations..." onchange="saveData()"></textarea></td>
+            `;
+            tbody.appendChild(newRow);
+            saveData(); // Sauvegarder après ajout
+        }
+
+        function deleteLastRow() {
+            const tbody = document.querySelector('#inventoryTable tbody');
+            if (tbody.children.length > 1) {
+                tbody.removeChild(tbody.lastElementChild);
+                saveData(); // Sauvegarder après suppression
+            }
+        }
+
+        // Charger les données au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            // Définir la date actuelle par défaut
+            if (!document.getElementById('signatureDate').value) {
+                const now = new Date();
+                const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+                document.getElementById('signatureDate').value = localDateTime;
+            }
+        });
+
+        // Sauvegarder automatiquement lors de la saisie
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('input, select, textarea')) {
+                setTimeout(saveData, 100); // Délai pour éviter trop de sauvegardes
+            }
+        });
+
+        function printInventory() {
+            // Capturer les données du tableau
+            const table = document.querySelector('#inventoryTable');
+            const rows = table.querySelectorAll('tbody tr');
+            let tableHTML = `
+                <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                    <thead>
+                        <tr>
+                            <th style="border: 1px solid #000; padding: 8px; background-color: #f2f2f2; font-weight: bold;">Date d'entrée</th>
+                            <th style="border: 1px solid #000; padding: 8px; background-color: #f2f2f2; font-weight: bold;">Date de sortie</th>
+                            <th style="border: 1px solid #000; padding: 8px; background-color: #f2f2f2; font-weight: bold;">Produit</th>
+                            <th style="border: 1px solid #000; padding: 8px; background-color: #f2f2f2; font-weight: bold;">Unité</th>
+                            <th style="border: 1px solid #000; padding: 8px; background-color: #f2f2f2; font-weight: bold;">Quantité</th>
+                            <th style="border: 1px solid #000; padding: 8px; background-color: #f2f2f2; font-weight: bold;">Observation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll('input, select, textarea');
+                const dateEntree = inputs[0]?.value || '';
+                const dateSortie = inputs[1]?.value || '';
+                const produit = inputs[2]?.value || '';
+                const unite = inputs[3]?.value || '';
+                const quantite = inputs[4]?.value || '';
+                const observation = inputs[5]?.value || '';
+                
+                if (dateEntree || produit || quantite) { // Afficher seulement les lignes avec des données
+                    tableHTML += `
+                        <tr>
+                            <td style="border: 1px solid #000; padding: 8px;">${dateEntree}</td>
+                            <td style="border: 1px solid #000; padding: 8px;">${dateSortie}</td>
+                            <td style="border: 1px solid #000; padding: 8px;">${produit}</td>
+                            <td style="border: 1px solid #000; padding: 8px;">${unite}</td>
+                            <td style="border: 1px solid #000; padding: 8px;">${quantite}</td>
+                            <td style="border: 1px solid #000; padding: 8px;">${observation}</td>
+                        </tr>
+                    `;
+                }
+            });
+            
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+            
+            // Récupérer les informations de signature
+            const savedSignature = localStorage.getItem('inventorySignature');
+            let signatureHTML = '';
+            if (savedSignature) {
+                const signatureData = JSON.parse(savedSignature);
+                if (signatureData.hasSignature) {
+                    signatureHTML = `
+                        <div style="margin-top: 30px; border-top: 2px solid #000; padding-top: 20px;">
+                            <h3>Validation et Signature</h3>
+                            <p><strong>Signé par:</strong> ${signatureData.signerName}</p>
+                            <p><strong>Date de signature:</strong> ${signatureData.signatureDate}</p>
+                            <div style="margin-top: 15px;">
+                                <img src="${signatureData.signatureImage}" style="border: 1px solid #000; max-width: 200px; height: auto;">
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Ajouter la date d'impression
+            const printDate = new Date().toLocaleDateString('fr-FR');
+            const printTime = new Date().toLocaleTimeString('fr-FR');
+            
+            // Créer une fenêtre d'impression
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Inventaire - Impression</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            margin: 20px;
+                        }
+                        .header {
+                            text-align: center;
+                            margin-bottom: 30px;
+                        }
+                        .logo {
+                            width: 3cm;
+                            height: 3cm;
+                            margin: 0 auto 20px auto;
+                            border: 1px solid #4CAF50;
+                            border-radius: 4px;
+                        }
+                        .logo img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: contain;
+                        }
+                        .print-info {
+                            text-align: right;
+                            margin-bottom: 20px;
+                            font-size: 12px;
+                            color: #666;
+                        }
+                        .footer {
+                            margin-top: 30px;
+                            text-align: center;
+                            font-size: 12px;
+                            color: #666;
+                        }
+                        @media print {
+                            body { margin: 0; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div class="logo">
+                            <img src="protection-civile-marocaine-seeklogo.png" alt="Protection Civile Marocaine Logo">
+                        </div>
+                        <h1>Inventaire - Protection Civile U.N.M.I Sale </h1>
+                    </div>
+                    
+                    <div class="print-info">
+                        <p>Date d'impression: ${printDate} à ${printTime}</p>
+                    </div>
+                    
+                    ${tableHTML}
+                    
+                    ${signatureHTML}
+                    
+                    <div class="footer">
+                        <p>Document généré automatiquement par le système de gestion de stock</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function printCurrentPage() {
+            // Vérifier si une signature existe
+            const savedSignature = localStorage.getItem('inventorySignature');
+            if (!savedSignature) {
+                alert('Veuillez d\'abord signer le document avant d\'imprimer.');
+                return;
+            }
+            
+            const signatureData = JSON.parse(savedSignature);
+            if (!signatureData.hasSignature) {
+                alert('Veuillez d\'abord signer le document avant d\'imprimer.');
+                return;
+            }
+            
+            // Imprimer la page actuelle
+            window.print();
+        }
+
+        function clearAllData() {
+            const tbody = document.querySelector('#inventoryTable tbody');
+            tbody.innerHTML = '';
+            localStorage.removeItem('inventoryData');
+            localStorage.removeItem('inventorySignature');
+            clearSignature();
+            document.getElementById('signerName').value = '';
+            document.getElementById('signatureDate').value = '';
+        }
+    </script>
+    
+    <!-- Link to external JavaScript file -->
+    <script src="js/inventory.js"></script>
+</body>
+</html> 
