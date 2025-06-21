@@ -205,6 +205,18 @@
             box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
         }
 
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+            background: linear-gradient(135deg, #138496, #17a2b8);
+        }
+
         .signature-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -350,6 +362,25 @@
             background: linear-gradient(135deg, #dc3545, #c82333);
             color: white;
         }
+
+        .auto-save-indicator.show {
+            opacity: 1;
+        }
+
+        /* Keyboard shortcuts hint */
+        .shortcuts-hint {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid #4CAF50;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+            color: #4CAF50;
+        }
+
+        .shortcuts-hint strong {
+            color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -363,6 +394,16 @@
         </div>
 
         <form id="bonSortieForm">
+            <!-- Keyboard Shortcuts Hint -->
+            <div class="shortcuts-hint no-print">
+                <i class="fas fa-keyboard"></i> <strong>Raccourcis clavier:</strong> 
+                <strong>Entrée</strong> pour passer au champ suivant, 
+                <strong>Ctrl+Entrée</strong> pour ajouter un article, 
+                <strong>Ctrl+S</strong> pour sauvegarder, 
+                <strong>Ctrl+P</strong> pour imprimer,
+                <strong>Ctrl+N</strong> pour nouveau bon
+            </div>
+
             <!-- Informations Générales -->
             <table class="bon-table">
                 <tr>
@@ -383,7 +424,7 @@
             <table class="items-table">
                 <thead>
                     <tr>
-                        <th>N°</th>
+                        <th>Réf.message</th>
                         <th>Article</th>
                         <th>Description</th>
                         <th>Quantité</th>
@@ -442,6 +483,9 @@
                 </button>
                 <button type="button" class="btn btn-primary me-3" onclick="printBonSortie()">
                     <i class="fas fa-print"></i> Imprimer
+                </button>
+                <button type="button" class="btn btn-info me-3" onclick="createNewBon()">
+                    <i class="fas fa-plus-circle"></i> Nouveau Bon
                 </button>
                 <button type="button" class="btn btn-danger" id="logoutBtn">
                     <i class="fas fa-sign-out-alt"></i> Déconnexion
