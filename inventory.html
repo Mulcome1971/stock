@@ -256,19 +256,22 @@
         <h1>Gestion d'Inventaire</h1>
         
         <div class="controls">
-            <button class="btn" onclick="addRow()">Ajouter une ligne</button>
-            <button class="btn btn-danger" onclick="deleteLastRow()">Supprimer la dernière ligne</button>
+            <button class="btn admin-only" onclick="addRow()">Ajouter une ligne</button>
+            <button class="btn btn-danger admin-only" onclick="deleteLastRow()">Supprimer la dernière ligne</button>
             <button class="print-btn" onclick="printInventory()">
                 <i class="fas fa-print"></i> Imprimer (Nouvelle fenêtre)
             </button>
             <button class="print-btn" onclick="printCurrentPage()" style="background-color: #17a2b8;">
                 <i class="fas fa-print"></i> Imprimer (Page actuelle)
             </button>
-            <button class="btn btn-warning" onclick="clearAllData()" style="background-color: #ffc107; color: #000;">
+            <button class="btn btn-warning admin-only" onclick="clearAllData()" style="background-color: #ffc107; color: #000;">
                 <i class="fas fa-trash"></i> Effacer tout
             </button>
             <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">
                 <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </button>
+            <button class="btn btn-secondary" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left me-2"></i>Retour
             </button>
         </div>
 
@@ -573,7 +576,38 @@
                 const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
                 document.getElementById('signatureDate').value = localDateTime;
             }
+            
+            // تطبيق نظام الصلاحيات
+            applyUserPermissions();
         });
+
+        // دالة لتطبيق نظام الصلاحيات
+        function applyUserPermissions() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            const isAdmin = currentUser.role === 'Administrateur';
+            
+            // إخفاء/إظهار عناصر حسب الصلاحيات
+            const adminOnlyElements = document.querySelectorAll('.admin-only');
+            
+            adminOnlyElements.forEach(element => {
+                element.style.display = isAdmin ? 'inline-block' : 'none';
+            });
+
+            // إذا كان المستخدم عادي، جعل الحقول للقراءة فقط
+            if (!isAdmin) {
+                const inputs = document.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    input.readOnly = true;
+                    input.disabled = true;
+                });
+                
+                // إخفاء قسم التوقيع للمستخدم العادي
+                const signatureSection = document.querySelector('.signature-section');
+                if (signatureSection) {
+                    signatureSection.style.display = 'none';
+                }
+            }
+        }
 
         // Sauvegarder automatiquement lors de la saisie
         document.addEventListener('input', function(e) {

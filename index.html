@@ -3,80 +3,879 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Système de Gestion de Stock</title>
+    <title>Système de Gestion de Stock - Protection Civile Marocaine</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .logo {
-            width: 4cm;
-            height: 4cm;
-            display: block;
-            margin: 15px auto 25px auto;
-            border: 3px solid #4CAF50;
-            border-radius: 15px;
-            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+        /* تنسيقات جديدة لصفحة الدخول */
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* تنسيق الحاوية الرئيسية */
+        .main-container {
             display: flex;
+            min-height: 100vh;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2);
-            transition: all 0.4s ease;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* تنسيق صندوق تسجيل الدخول */
+        .login-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .login-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #4CAF50, #45a049, #4CAF50);
+            background-size: 200% 100%;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* تنسيق العنوان */
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .login-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            border-radius: 2px;
+        }
+
+        /* تنسيق أزرار التنقل */
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 5px;
+            position: relative;
+        }
+
+        .auth-buttons .btn {
+            flex: 1;
+            padding: 15px 25px;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            font-size: 14px;
             position: relative;
             overflow: hidden;
         }
-        .logo:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 35px rgba(76, 175, 80, 0.3);
-            border-color: #45a049;
+
+        .btn-login {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
         }
-        .logo::before {
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #45a049, #4CAF50);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        .btn-register:hover {
+            background: linear-gradient(135deg, #0056b3, #007bff);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+        }
+
+        .btn-active {
+            background: linear-gradient(135deg, #4CAF50, #45a049) !important;
+            color: white !important;
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4) !important;
+        }
+
+        .btn-inactive {
+            background: linear-gradient(135deg, #6c757d, #5a6268) !important;
+            color: white !important;
+            opacity: 0.7;
+        }
+
+        /* تنسيق النماذج */
+        .form-container {
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* تنسيق الحقول */
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            padding: 15px 20px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            background: #f8f9fa;
+            color: #495057;
+            position: relative;
+        }
+
+        .form-control:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
+            outline: none;
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .form-control:hover {
+            border-color: #4CAF50;
+            background: white;
+        }
+
+        /* تنسيق الأزرار */
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: none;
+            border-radius: 12px;
+            padding: 15px 30px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+            color: white;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             transition: left 0.5s;
         }
-        .logo:hover::before {
+
+        .btn-primary:hover::before {
             left: 100%;
         }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
+            background: linear-gradient(135deg, #45a049, #4CAF50);
+        }
+
+        /* تنسيق رسائل التنبيه */
+        .alert {
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+        }
+
+        .alert-success::before {
+            background: #28a745;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+        }
+
+        .alert-danger::before {
+            background: #dc3545;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+            color: #0c5460;
+        }
+
+        .alert-info::before {
+            background: #17a2b8;
+        }
+
+        /* تنسيق الشعار */
+        .logo-container {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            z-index: 10;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .logo:hover {
+            transform: translateY(-5px) rotate(5deg);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
         .logo img {
-            width: 85%;
-            height: 85%;
+            width: 70%;
+            height: 70%;
             object-fit: contain;
             border-radius: 10px;
-            z-index: 1;
+        }
+
+        /* تنسيقات إضافية للاستجابة */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 10px;
+            }
+            
+            .login-box {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+            
+            .login-title {
+                font-size: 1.8rem;
+            }
+            
+            .auth-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .logo-container {
+                position: relative;
+                top: auto;
+                right: auto;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            
+            .logo {
+                width: 60px;
+                height: 60px;
+                margin: 0 auto;
+            }
+        }
+
+        /* تأثيرات إضافية */
+        .form-control:focus + .form-label,
+        .form-control:not(:placeholder-shown) + .form-label {
+            transform: translateY(-25px) scale(0.8);
+            color: #4CAF50;
+        }
+
+        /* تنسيق خاص لحقول كلمة المرور */
+        .password-field {
             position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #4CAF50;
+        }
+
+        /* تنسيق معلومات الصلاحيات */
+        .permissions-info {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border: 1px solid #2196f3;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #1565c0;
+            font-size: 14px;
+        }
+
+        .permissions-info h6 {
+            color: #0d47a1;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .permissions-info ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .permissions-info li {
+            margin-bottom: 5px;
         }
     </style>
 </head>
-<body class="login-page">
-    <div class="container">
-        <div class="login-container">
-            <!-- Logo -->
-            <div class="logo">
-                <img src="protection-civile-marocaine-seeklogo.png" alt="Protection Civile Marocaine Logo">
+<body>
+    <!-- شعار الحماية المدنية -->
+    <div class="logo-container">
+        <div class="logo">
+            <img src="protection-civile-marocaine-seeklogo.png" alt="Protection Civile Marocaine">
+        </div>
+    </div>
+
+        <div class="main-container">
+            <div class="login-box">
+            <h1 class="login-title">Système de Gestion de Stock</h1>
+            <p class="text-center text-muted mb-4">Protection Civile Marocaine</p>
+            
+            <!-- معلومات الصلاحيات -->
+            <div class="permissions-info">
+                <h6><i class="fas fa-shield-alt me-2"></i>Système de Permissions</h6>
+                <ul>
+                    <li><strong>Administrateur:</strong> Accès complet (gestion, modification, suppression)</li>
+                    <li><strong>Utilisateur:</strong> Consultation et impression uniquement</li>
+                </ul>
             </div>
             
-            <div class="login-box">
-                <h2 class="text-center mb-4">Connexion</h2>
-                <form id="loginForm">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Nom d'utilisateur</label>
-                        <input type="text" class="form-control" id="username" required>
+            <!-- أزرار التنقل بين تسجيل الدخول والتسجيل -->
+            <div class="auth-buttons">
+                <button type="button" class="btn btn-login btn-active" id="loginTab">
+                    <i class="fas fa-sign-in-alt me-2"></i>Connexion
+                </button>
+                <button type="button" class="btn btn-register btn-inactive" id="registerTab">
+                    <i class="fas fa-user-plus me-2"></i>S'inscrire
+                </button>
+            </div>
+            
+            <!-- نموذج تسجيل الدخول -->
+            <div class="form-container active" id="loginFormContainer">
+                <form id="loginFormElement">
+                    <div class="form-group">
+                        <label for="loginUsername" class="form-label">
+                            <i class="fas fa-user me-2"></i>Nom d'utilisateur
+                        </label>
+                        <input type="text" class="form-control" id="loginUsername" placeholder="Entrez votre nom d'utilisateur" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Mot de passe</label>
-                        <input type="password" class="form-control" id="password" required>
+                    <div class="form-group">
+                        <label for="loginPassword" class="form-label">
+                            <i class="fas fa-lock me-2"></i>Mot de passe
+                        </label>
+                        <div class="password-field">
+                            <input type="password" class="form-control" id="loginPassword" placeholder="Entrez votre mot de passe" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Se connecter
+                    </button>
+                </form>
+            </div>
+
+            <!-- نموذج التسجيل -->
+            <div class="form-container" id="registerFormContainer">
+                <form id="registerFormElement">
+                    <div class="form-group">
+                        <label for="registerFullName" class="form-label">
+                            <i class="fas fa-user me-2"></i>Nom complet
+                        </label>
+                        <input type="text" class="form-control" id="registerFullName" placeholder="Entrez votre nom complet" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerUsername" class="form-label">
+                            <i class="fas fa-at me-2"></i>Nom d'utilisateur
+                        </label>
+                        <input type="text" class="form-control" id="registerUsername" placeholder="Choisissez un nom d'utilisateur" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail" class="form-label">
+                            <i class="fas fa-envelope me-2"></i>Email
+                        </label>
+                        <input type="email" class="form-control" id="registerEmail" placeholder="Entrez votre adresse email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPhone" class="form-label">
+                            <i class="fas fa-phone me-2"></i>Téléphone
+                        </label>
+                        <input type="tel" class="form-control" id="registerPhone" placeholder="Entrez votre numéro de téléphone">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerRole" class="form-label">
+                            <i class="fas fa-user-tag me-2"></i>Rôle
+                        </label>
+                        <select class="form-control" id="registerRole" required>
+                            <option value="">Sélectionner un rôle</option>
+                            <option value="Utilisateur">Utilisateur (Consultation uniquement)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword" class="form-label">
+                            <i class="fas fa-lock me-2"></i>Mot de passe
+                        </label>
+                        <div class="password-field">
+                            <input type="password" class="form-control" id="registerPassword" placeholder="Créez un mot de passe" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('registerPassword')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerConfirmPassword" class="form-label">
+                            <i class="fas fa-lock me-2"></i>Confirmer le mot de passe
+                        </label>
+                        <div class="password-field">
+                            <input type="password" class="form-control" id="registerConfirmPassword" placeholder="Confirmez votre mot de passe" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('registerConfirmPassword')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerNotes" class="form-label">
+                            <i class="fas fa-sticky-note me-2"></i>Notes
+                        </label>
+                        <textarea class="form-control" id="registerNotes" rows="3" placeholder="Notes optionnelles..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-2"></i>S'inscrire
+                    </button>
                 </form>
             </div>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/login.js"></script>
+    <script>
+        // إدارة التنقل بين النماذج
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing login system...');
+            
+            // إضافة مستخدمين افتراضيين للاختبار إذا لم يكن هناك مستخدمين
+            initializeDefaultUsers();
+            
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const loginFormContainer = document.getElementById('loginFormContainer');
+            const registerFormContainer = document.getElementById('registerFormContainer');
+
+            // التحقق من وجود العناصر
+            if (!loginTab || !registerTab || !loginFormContainer || !registerFormContainer) {
+                console.error('Required elements not found');
+                return;
+            }
+
+            console.log('Elements found, setting up event listeners...');
+
+            // تبديل إلى نموذج تسجيل الدخول
+            loginTab.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Login tab clicked');
+                
+                loginTab.classList.remove('btn-inactive');
+                loginTab.classList.add('btn-active');
+                registerTab.classList.remove('btn-active');
+                registerTab.classList.add('btn-inactive');
+                
+                loginFormContainer.classList.add('active');
+                registerFormContainer.classList.remove('active');
+            });
+
+            // تبديل إلى نموذج التسجيل
+            registerTab.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Register tab clicked');
+                
+                registerTab.classList.remove('btn-inactive');
+                registerTab.classList.add('btn-active');
+                loginTab.classList.remove('btn-active');
+                loginTab.classList.add('btn-inactive');
+                
+                registerFormContainer.classList.add('active');
+                loginFormContainer.classList.remove('active');
+            });
+
+            // معالجة نموذج تسجيل الدخول
+            const loginForm = document.getElementById('loginFormElement');
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Login form submitted');
+                    
+                    const username = document.getElementById('loginUsername').value;
+                    const password = document.getElementById('loginPassword').value;
+
+                    console.log('Login attempt:', { username, password: '***' });
+
+                    // التحقق من البيانات
+                    if (!username || !password) {
+                        showAlert('Veuillez remplir tous les champs obligatoires', 'danger');
+                        return;
+                    }
+
+                    // الحصول على قائمة المستخدمين من localStorage
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    console.log('Available users:', users.length);
+                    console.log('Users in system:', users.map(u => ({ username: u.username, role: u.role, status: u.status })));
+                    
+                    // البحث عن المستخدم
+                    const user = users.find(u => u.username === username && u.password === password && u.status === 'Actif');
+                    
+                    if (user) {
+                        console.log('User found:', user.fullName, 'Role:', user.role);
+                        // حفظ حالة تسجيل الدخول
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('currentUser', JSON.stringify(user));
+                        
+                        showAlert('Connexion réussie! Redirection...', 'success');
+                        
+                        // إعادة التوجيه إلى صفحة Dashboard
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 1500);
+                    } else {
+                        console.log('User not found or invalid credentials');
+                        
+                        // فحص تفصيلي للمشكلة
+                        const userByUsername = users.find(u => u.username === username);
+                        if (!userByUsername) {
+                            console.log('Username not found:', username);
+                            showAlert(`Nom d'utilisateur "${username}" non trouvé`, 'danger');
+                        } else if (userByUsername.password !== password) {
+                            console.log('Password mismatch for user:', username);
+                            showAlert('Mot de passe incorrect', 'danger');
+                        } else if (userByUsername.status !== 'Actif') {
+                            console.log('User not active:', username, 'Status:', userByUsername.status);
+                            showAlert('Compte utilisateur non actif', 'danger');
+                        } else {
+                            showAlert('Nom d\'utilisateur ou mot de passe incorrect', 'danger');
+                        }
+                        
+                        // عرض معلومات للمساعدة في الاختبار
+                        if (users.length === 0) {
+                            showAlert('Aucun utilisateur enregistré. Veuillez d\'abord vous inscrire.', 'info');
+                        } else {
+                            console.log('Available usernames:', users.map(u => u.username));
+                        }
+                    }
+                });
+            } else {
+                console.error('Login form not found');
+            }
+
+            // معالجة نموذج التسجيل
+            const registerForm = document.getElementById('registerFormElement');
+            if (registerForm) {
+                registerForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Register form submitted');
+                    
+                    const fullName = document.getElementById('registerFullName').value;
+                    const username = document.getElementById('registerUsername').value;
+                    const email = document.getElementById('registerEmail').value;
+                    const phone = document.getElementById('registerPhone').value;
+                    const role = document.getElementById('registerRole').value;
+                    const password = document.getElementById('registerPassword').value;
+                    const confirmPassword = document.getElementById('registerConfirmPassword').value;
+                    const notes = document.getElementById('registerNotes').value;
+
+                    // التحقق من البيانات
+                    if (!fullName || !username || !email || !role || !password || !confirmPassword) {
+                        showAlert('Veuillez remplir tous les champs obligatoires', 'danger');
+                        return;
+                    }
+
+                    if (password !== confirmPassword) {
+                        showAlert('Les mots de passe ne correspondent pas', 'danger');
+                        return;
+                    }
+
+                    if (password.length < 6) {
+                        showAlert('Le mot de passe doit contenir au moins 6 caractères', 'danger');
+                        return;
+                    }
+
+                    // التحقق من صحة البريد الإلكتروني
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(email)) {
+                        showAlert('Veuillez entrer une adresse email valide', 'danger');
+                        return;
+                    }
+
+                    // الحصول على قائمة المستخدمين الحالية
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    
+                    // التحقق من عدم وجود اسم المستخدم مسبقاً
+                    if (users.some(user => user.username === username)) {
+                        showAlert('Ce nom d\'utilisateur existe déjà', 'danger');
+                        return;
+                    }
+
+                    // التحقق من عدم وجود البريد الإلكتروني مسبقاً
+                    if (users.some(user => user.email === email)) {
+                        showAlert('Cette adresse email existe déjà', 'danger');
+                        return;
+                    }
+
+                    // إنشاء المستخدم الجديد
+                    const newUser = {
+                        id: Date.now().toString(),
+                        fullName: fullName.toUpperCase(),
+                        username: username,
+                        email: email,
+                        phone: phone,
+                        role: role,
+                        status: 'Actif',
+                        password: password,
+                        notes: notes,
+                        createdAt: new Date().toISOString()
+                    };
+
+                    // إضافة المستخدم إلى القائمة
+                    users.push(newUser);
+                    localStorage.setItem('users', JSON.stringify(users));
+
+                    showAlert('Inscription réussie! Vous pouvez maintenant vous connecter.', 'success');
+                    
+                    // مسح النموذج
+                    registerForm.reset();
+                    
+                    // العودة إلى نموذج تسجيل الدخول
+                    setTimeout(() => {
+                        loginTab.click();
+                    }, 2000);
+                });
+            } else {
+                console.error('Register form not found');
+            }
+
+            console.log('Event listeners set up successfully');
+        });
+
+        // دالة لإضافة مستخدمين افتراضيين للاختبار
+        function initializeDefaultUsers() {
+            console.log('Initializing default users...');
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            console.log('Current users count:', users.length);
+            
+            // إضافة مستخدمين افتراضيين إذا لم يكن هناك مستخدمين
+            if (users.length === 0) {
+                console.log('No users found, creating default users...');
+                
+                // مدير واحد
+                const adminUser = {
+                    id: 'admin-user-' + Date.now(),
+                    fullName: 'ADMINISTRATEUR PRINCIPAL',
+                    username: 'admin',
+                    email: 'admin@protection-civile.ma',
+                    phone: '',
+                    role: 'Administrateur',
+                    status: 'Actif',
+                    password: 'admin123',
+                    notes: 'Administrateur principal avec tous les droits',
+                    createdAt: new Date().toISOString()
+                };
+                
+                // مستخدم عادي
+                const regularUser = {
+                    id: 'user-default-' + Date.now(),
+                    fullName: 'UTILISATEUR STANDARD',
+                    username: 'user',
+                    email: 'user@protection-civile.ma',
+                    phone: '',
+                    role: 'Utilisateur',
+                    status: 'Actif',
+                    password: 'user123',
+                    notes: 'Utilisateur standard avec accès en lecture seule',
+                    createdAt: new Date().toISOString()
+                };
+                
+                users.push(adminUser, regularUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                console.log('Default users created successfully:', adminUser.username, regularUser.username);
+                console.log('Total users now:', users.length);
+                
+                // عرض رسالة للمستخدم
+                setTimeout(() => {
+                    showAlert(`
+                        <strong>Utilisateurs par défaut créés!</strong><br><br>
+                        <strong>Administrateur:</strong><br>
+                        Nom d'utilisateur: <strong>admin</strong><br>
+                        Mot de passe: <strong>admin123</strong><br><br>
+                        <strong>Utilisateur:</strong><br>
+                        Nom d'utilisateur: <strong>user</strong><br>
+                        Mot de passe: <strong>user123</strong>
+                    `, 'info');
+                }, 1000);
+            } else {
+                console.log('Users already exist:', users.map(u => u.username));
+            }
+        }
+
+        // دالة لعرض رسائل التنبيه
+        function showAlert(message, type) {
+            console.log('Showing alert:', message, type);
+            
+            // إزالة أي رسائل تنبيه سابقة
+            const existingAlert = document.querySelector('.alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+
+            // إنشاء رسالة تنبيه جديدة
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            // إضافة الرسالة إلى الصفحة
+            const loginBox = document.querySelector('.login-box');
+            if (loginBox) {
+                loginBox.insertBefore(alertDiv, loginBox.firstChild);
+            }
+
+            // إزالة الرسالة تلقائياً بعد 8 ثوانٍ
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 8000);
+        }
+
+        // التحقق من وجود مستخدم مسجل دخول
+        function checkLoginStatus() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn === 'true') {
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        // تشغيل التحقق عند تحميل الصفحة
+        checkLoginStatus();
+
+        // دالة لإظهار/إخفاء كلمة المرور
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const toggle = field.nextElementSibling;
+            const icon = toggle.querySelector('i');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html> 
