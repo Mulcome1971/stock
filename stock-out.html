@@ -428,8 +428,8 @@
                         <th>Article</th>
                         <th>Description</th>
                         <th>Quantité</th>
-                        <th>Demandeur</th>
-                        <th>Magasinier</th>
+                        <th>Le donnant</th>
+                        <th>Le Magasinier</th>
                         <th class="no-print">Actions</th>
                     </tr>
                 </thead>
@@ -439,8 +439,8 @@
                         <td><input type="text" placeholder="Entrez le nom de l'article" required></td>
                         <td><input type="text"></td>
                         <td><input type="number" class="quantity" required></td>
-                        <td><input type="text" class="demandeur-field" required></td>
-                        <td><input type="text" class="magasinier-field"></td>
+                        <td><input type="text" class="donnant-field" placeholder="Nom du donnant" required></td>
+                        <td><input type="text" class="magasinier-field" placeholder="Nom du magasinier"></td>
                         <td class="no-print">
                             <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
                                 <i class="fas fa-trash"></i>
@@ -465,16 +465,19 @@
             <!-- Signatures -->
             <div class="signature-section">
                 <div class="signature-box">
-                    <h5>Demandeur</h5>
-                    <input type="text" class="form-control" id="demandeurNomQualite" placeholder="Nom et qualité du demandeur">
-                    <div class="signature-line">Signature</div>
-                </div>
-                <div class="signature-box">
                     <h5>Magasinier</h5>
                     <input type="text" class="form-control" id="magasinierNomQualite" placeholder="Nom et qualité du magasinier">
                     <div class="signature-line">Signature</div>
                 </div>
+                <div class="signature-box">
+                    <h5>Demandeur</h5>
+                    <input type="text" class="form-control" id="demandeurNomQualite" placeholder="Nom et qualité du demandeur">
+                    <div class="signature-line">Signature</div>
+                </div>
             </div>
+
+            <!-- Hidden field for fournisseur -->
+            <input type="hidden" id="fournisseurNomQualite">
 
             <!-- Actions -->
             <div class="actions-section no-print">
